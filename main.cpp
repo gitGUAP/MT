@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
+#include <array>
 
 using namespace std;
 
@@ -12,9 +14,7 @@ map<string, int> table = {
 	{ "K2", 11 },{ "K3", 12 },{ "K4", 13 },
 	{ "Y*", 6 },{ "Y+", 7 },{ "Y$", 7 },
 	{ "W^", 8 },{ "W+", 9 },{ "W$", 9 },
-	{ "$$", 0 }
 };
-
 
 string grammar[] = { "Blanket",
 	"E",
@@ -32,9 +32,13 @@ string grammar[] = { "Blanket",
 	"4",
 };
 
+vector<array<int, 2>> mtr;
+int selection;
+
 bool check(string inp) {
 	string stack = "$S";
 	inp += '$';
+	mtr.clear();
 
 	for (int i = 1; !inp.empty(); i++) {
 		char symb = inp.front();
@@ -54,40 +58,42 @@ bool check(string inp) {
 		if (finded == table.end())
 			return false;
 		else {
+
+			if (finded->second == 5) {
+				mtr.push_back({ 0, 0});
+				selection = 0;
+				cout << finded->second << endl;
+			}
+			else if (finded->second == 6) {
+				mtr[mtr.size() - 1][1] = 1;
+				cout << finded->second << endl;
+			}
+			else if (finded->second == 8) {
+				selection = 1;
+				cout << finded->second << endl;
+			}
+			else if (finded->second == 10) {
+				mtr.push_back({ 1,0 });
+				selection = 1;
+				cout << finded->second << endl;
+			}
+			else if (finded->second >= 11 && finded->second <= 13) {
+				mtr[mtr.size() - 1][selection] = symb - '0';
+
+				cout << "K: " << symb << endl;
+			}
+
 			string state = grammar[finded->second];
 
 			stack.pop_back();
 			stack += string(state.rbegin(), state.rend());
 		}
-	
 
+		//cout << "\t" << "--- " << i << " ---" << endl
+		//	<< "String: " << inp << endl
+		//	<< "Command: " << finded->second << endl
+		//	<< "Stack: " << stack << endl;
 
-		//	int indexT = tableTop.find(symb);
-		//	int indexL = tableLeft.find(stackState);
-
-		//	if (indexT == std::string::npos)
-		//		return false;
-
-		//	int command = table[indexL][indexT];
-
-		//	switch (command) {
-		//	case 0: return true;
-		//	case -2: return false;
-		//	case -1: {
-		//		inp.erase(0, 1);
-		//		stack.pop_back();
-		//		continue;
-		//	}
-		//	}
-
-		//	string state = grammar[command];
-		//	stack.pop_back();
-		//	stack += string(state.rbegin(), state.rend());;
-
-		//	cout << "\t" << "--- " << i << " ---" << endl
-		//		<< "String: " << inp << endl
-		//		<< "Command: " << command << endl
-		//		<< "Stack: " << stack << endl;
 	}
 	return false;
 }
@@ -96,10 +102,70 @@ int main() {
 	while (true) {
 		string inp;
 		cout << "Input string: "; cin >> inp;
-		if (check(inp))
-			cout << "===YES==";
-		else
+
+		if (check(inp)) {
+			cout << "Matrix:" << endl;
+			cout << "|C, ^|" << endl;
+			cout << "|----|" << endl;
+
+			for (auto const& value : mtr) {
+				cout << "|" <<value[0] << ", " << value[1] << "|" << endl;
+			}
+
+			int nw[5] = {0,0,0,0,0};
+			for (auto const& val : mtr) {
+				switch (val[1]) {
+					case 0: {
+						nw[0] += val[0];
+						break;
+					}
+					case 1: {
+						nw[1] += val[0];
+						break;
+					}
+					case 2: {
+						nw[2] += val[0];
+						break;
+					}
+					case 3: {
+						nw[3] += val[0];
+						break;
+					}
+					case 4: {
+						nw[4] += val[0];
+						break;
+					}
+				}
+			}
+			
+			cout << endl << "Matrix Optimized:" << endl;
+			cout << "|^, C|" << endl;
+			cout << "|----|" << endl;
+			for (int i = 0; i < 5; i++) {
+				if (nw[i] != 0)
+					cout << "|" << i << ", " << nw[i] << "|" << endl;
+			}
+
+
+			cout << endl << endl << "Optimized:" << endl;
+			int j = 0;
+			for (int i = 0; i< 5; i++) {
+				if (nw[i] == 0) continue;
+
+				if (j != 0) printf(" + ");
+
+				if (i == 0)
+					printf("%d", nw[i]);
+				else if (i == 1)
+					printf("%d*x", nw[i]);
+				else
+					printf("%d*x^%d", nw[i], i);
+				j++;
+			}
+
+		} else {
 			cout << "===NOT==";
+		}
 		cout << "\n\n\n";
 	}
 	return 0;
