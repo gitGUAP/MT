@@ -139,11 +139,11 @@ int main() {
 			}
 			
 			cout << endl << "Matrix Optimized:" << endl;
-			cout << "|^, C|" << endl;
+			cout << "|C, ^|" << endl;
 			cout << "|----|" << endl;
 			for (int i = 0; i < 5; i++) {
 				if (nw[i] != 0)
-					cout << "|" << i << ", " << nw[i] << "|" << endl;
+					cout << "|" << nw[i] << ", " << i << "|" << endl;
 			}
 
 
