@@ -1,0 +1,23 @@
+%option noyywrap
+
+%{
+#include <stdio.h>
+
+#define YY_DECL int yylex()
+
+#include "y.tab.h"
+
+%}
+
+%%
+
+\n {return T_NEWLINE;}
+2 {return '2';}
+3 {return '3';}
+4 {return '4';}
+"*" {return '*';}
+"+" {return '+';}
+"^" {return '^';}
+"x" {return 'x';}
+
+%%
